@@ -8,6 +8,12 @@ import (
 
 	"covid/src/cmd/config"
 
+	deathCase "covid/src/pkg/deathcase"
+	externalDdc "covid/src/pkg/external/ddc"
+
+	deathCaseHandler "covid/src/api/deathcase/handler"
+
+	"covid/src/pkg/utils/client"
 	"covid/src/pkg/utils/logger"
 
 	"github.com/gorilla/mux"
@@ -27,9 +33,19 @@ type RouterConfig struct {
 
 func InitRouter(routerConfig RouterConfig) http.Handler {
 	fmt.Println("InitRouter :", routerConfig)
+
 	/* Service */
+	clientService := client.NewService(routerConfig.Logs)
+	externalDdc.DDCURL = routerConfig.Config.DCCAPI
+	externalDccService := externalDdc.NewService(clientService,routerConfig.Logs)
+	deathCaseService := deathCase.NewService(externalDccService,routerConfig.Logs)
 
 	/* Handler */
+	deathCaseHandlerParam := deathCaseHandler.HandlerParam{
+		Service: deathCaseService,
+		Logs:    routerConfig.Logs,
+	}
+	deathCaseHandler := deathCaseHandler.MakeDeathCaseHandler(deathCaseHandlerParam)
 
 	/* Router */
 	middleware := middleware.NewMiddleware(routerConfig.Logs)
@@ -37,6 +53,9 @@ func InitRouter(routerConfig RouterConfig) http.Handler {
 	router.Use(middleware.Recover)
 	router.HandleFunc("/version", versionHandler)
 	router.PathPrefix("/swagger").Handler(httpSwagger.WrapHandler)
+
+	deathCase := router.PathPrefix("/deathcases").Subrouter()
+	deathCase.HandleFunc("/gettopthreeprovice", http.HandlerFunc(deathCaseHandler.GetTopThreeProvice)).Methods("GET")
 
 	return router
 }

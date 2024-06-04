@@ -24,7 +24,61 @@
             "url": "http://localhost:8000"
         }
     ],
-    "paths": {},
+    "paths": {
+        "/deathcases/gettopthreeprovice": {
+            "get": {
+                "tags": [
+                    "Death Cases"
+                ],
+                "summary": "Get Top Three Provice",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/TopThreeDeathCase"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseBadRequest"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Data Not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseDataNotFound"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
     "components": {
         "securitySchemes": {
             "bearerAuth": {
@@ -107,6 +161,18 @@
                     },
                     "resultremark": {
                         "type": "string"
+                    }
+                }
+            },
+            "TopThreeDeathCase": {
+                "type": "object",
+                "properties": {
+                    "province": {
+                        "type": "string"
+                    },
+                    "cases": {
+                        "type": "integer",
+                        "format": "int64"
                     }
                 }
             }

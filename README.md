@@ -15,4 +15,6 @@ env on docker-compose.yaml
 
 API Doc on http://localhost:8000/swagger/index.html After run docker-compose up --build success and ready to start
 
+this Project have only 1 API is http://localhost:8000/deathcases/gettopthreeprovice
+
 for detail of architecture in on README.md inside backend
